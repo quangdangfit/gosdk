@@ -1,18 +1,15 @@
 package logger
 
 import (
-	"github.com/spf13/viper"
 	"gitlab.ghn.vn/logistics/ts/lib/utils/logger/zaplogger"
 )
 
-const productStr = "production"
-
 var (
-	logger Logger
+	logger Logger = zaplogger.New(false)
 )
 
-func init() {
-	production := viper.GetBool(productStr)
+// Initialize default production is false if not call func
+func Initialize(production bool) {
 	logger = zaplogger.New(production)
 }
 
