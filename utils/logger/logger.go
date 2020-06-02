@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"gitlab.ghn.vn/logistics/ts/lib/utils/logger/zaplogger"
+	"transport/lib/utils/logger/zaplogger"
 )
 
 var (
