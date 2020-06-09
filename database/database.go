@@ -28,7 +28,7 @@ type DBConfig struct {
 	Replica           string
 }
 
-func NewConnection(config DBConfig) *mongoDB {
+func NewConnection(config DBConfig) MongoDB {
 	var s *mgo.Session
 
 	if config.Env == "replica" {
