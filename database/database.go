@@ -1,11 +1,12 @@
-package dbs
+package database
 
 import (
-	"gopkg.in/mgo.v2"
 	"math"
 	"strings"
 	"time"
 	"transport/lib/utils/logger"
+
+	"gopkg.in/mgo.v2"
 )
 
 type Paging struct {
@@ -27,7 +28,7 @@ type DBConfig struct {
 	Replica           string
 }
 
-func Connect(config DBConfig) *MongoDB {
+func NewConnection(config DBConfig) *mongoDB {
 	var s *mgo.Session
 
 	if config.Env == "replica" {
@@ -36,7 +37,7 @@ func Connect(config DBConfig) *MongoDB {
 		s = nativeConnection(config)
 	}
 	db := mgo.Database{Session: s, Name: config.Database}
-	return &MongoDB{Database: &db}
+	return &mongoDB{conn: &db}
 }
 
 func nativeConnection(config DBConfig) *mgo.Session {
