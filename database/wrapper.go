@@ -2,6 +2,7 @@ package database
 
 import (
 	"transport/lib/utils/logger"
+	"transport/lib/utils/paging"
 
 	"gopkg.in/mgo.v2"
 )
@@ -16,7 +17,7 @@ type MongoDB interface {
 	DropIndex(collectionName string, name string) bool
 	FindOne(collectionName string, query interface{}, sort string, TResult interface{}) (err error)
 	FindMany(collectionName string, query map[string]interface{}, sort string, TResult interface{}) (err error)
-	FindManyPaging(collectionName string, query map[string]interface{}, sort string, page int, limit int, TResult interface{}) (*Paging, error)
+	FindManyPaging(collectionName string, query map[string]interface{}, sort string, page int, limit int, TResult interface{}) (*paging.Paging, error)
 	PipeAll(collectionName string, pipeline interface{}, TResult interface{}) (err error)
 	InsertOne(collectionName string, payload interface{}) (err error)
 	InsertMany(collectionName string, payload []interface{}) (err error)
@@ -28,8 +29,9 @@ type MongoDB interface {
 	ApplyDB(collectionName string, selector interface{}, payload interface{}, TResult interface{}) (err error)
 }
 
+// GetSession will return a copy session from session of database, remember close session at the end.
 func (db *mongoDB) GetSession() *mgo.Session {
-	return db.conn.Session
+	return db.conn.Session.Copy()
 }
 
 // EnsureIndex ensures an index with the given collection name and key exists, creating it with
@@ -115,7 +117,7 @@ func (db *mongoDB) FindMany(collectionName string, query map[string]interface{},
 }
 
 // FindMany executes FindMany function but skip by page parameter and limit by limit parameter
-func (db *mongoDB) FindManyPaging(collectionName string, query map[string]interface{}, sort string, page int, limit int, TResult interface{}) (*Paging, error) {
+func (db *mongoDB) FindManyPaging(collectionName string, query map[string]interface{}, sort string, page int, limit int, TResult interface{}) (*paging.Paging, error) {
 	sessionClone := db.conn.Session.Copy()
 	defer sessionClone.Close()
 	collection := sessionClone.DB(db.conn.Name).C(collectionName)
@@ -125,14 +127,14 @@ func (db *mongoDB) FindManyPaging(collectionName string, query map[string]interf
 	if total == 0 {
 		return nil, mgo.ErrNotFound
 	}
-	paging := GetPaging(page, limit, total)
-	err := cursor.Skip(paging.Skip).Limit(paging.Limit).All(TResult)
+	pagingObj := paging.GetPaging(page, limit, total)
+	err := cursor.Skip(pagingObj.Skip).Limit(pagingObj.Limit).All(TResult)
 	if err == mgo.ErrNotFound {
 		logger.Error("[FindManyPaging] ERROR: ", err)
 		return nil, err
 	}
 
-	return &paging, nil
+	return &pagingObj, nil
 }
 
 // PipeAll prepares a pipeline to aggregate. The pipeline document
