@@ -12,7 +12,7 @@ type Paging struct {
 	Skip      int `json:"skip"`
 }
 
-func GetPaging(page int, pageSize int, total int) Paging {
+func New(page int, pageSize int, total int) *Paging {
 	var pageInfo Paging
 	limit := 50
 
@@ -33,5 +33,5 @@ func GetPaging(page int, pageSize int, total int) Paging {
 	}
 	pageInfo.Current = page
 	pageInfo.Skip = (page - 1) * pageInfo.Limit
-	return pageInfo
+	return &pageInfo
 }
