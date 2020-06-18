@@ -1,4 +1,4 @@
-module transport/lib
+module gocommon
 
 go 1.14
 
