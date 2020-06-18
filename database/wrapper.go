@@ -1,8 +1,8 @@
 package database
 
 import (
-	"transport/lib/utils/logger"
-	"transport/lib/utils/paging"
+	"gitlab.com/quangdangfit/gocommon/utils/logger"
+	"gitlab.com/quangdangfit/gocommon/utils/paging"
 
 	"gopkg.in/mgo.v2"
 )

@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"gocommon/utils/paging"
+	"gitlab.com/quangdangfit/gocommon/utils/paging"
 	"gopkg.in/mgo.v2"
 	"log"
 )
