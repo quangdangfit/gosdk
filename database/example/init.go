@@ -1,8 +1,8 @@
 package main
 
 import (
-	db "gocommon/database"
-	"gocommon/database/mongo"
+	db "gitlab.com/quangdangfit/gocommon/database"
+	"gitlab.com/quangdangfit/gocommon/database/mongo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

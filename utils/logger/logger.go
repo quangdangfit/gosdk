@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"transport/lib/utils/logger/zaplogger"
+	"gitlab.com/quangdangfit/gocommon/utils/logger/zaplogger"
 )
 
 var (

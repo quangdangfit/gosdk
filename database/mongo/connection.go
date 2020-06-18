@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	db "gocommon/database"
+	db "gitlab.com/quangdangfit/gocommon/database"
 	"gopkg.in/mgo.v2"
 	"log"
 	"strings"
