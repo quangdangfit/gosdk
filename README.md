@@ -1,51 +1,46 @@
-# lib
+# Go common
 
-**Common lib**
+**Common lib in golang (datbase wrapper, logger, ...)**
 - Managed by version: [What is the version ?
 ](https://semver.org/)
 - Please `note here` what changes in each version
 
-## Version
-
-### v1.0.0
-- Initialize logger util
-### v1.0.1
-- Fix production mod
-- Because some package have init function so maybe when you use `logger` with
- `production mod`, log in `init func` will log with `develop mode` (default is `develop mode`)
-- Logger:  
-    Call in first line of main func:
-    ```go
+###Logger:  
+  Call in first line of main func:
+  ```go
   package main
   import (
       ...
-      "gitlab.ghn.vn/logistics/ts/lib/utils/logger"
+      "gitlab.com/quangdangfit/gocommon/utils/logger"
   )
   
   func main(){
       logger.Initialize(config.Config.Production)
       ...
   }
-    ```
+  ```
   
- - Mgo wrapper:
-    - Example  
-    ```go
+###Mgo wrapper:
+   ```go
     package main
     import (
        ...
-       transport/lib/utils/dbs"
+       "gopkg.in/mgo.v2/bson"
+       db "gitlab.com/quangdangfit/gocommon/database"
     )
     
     func main(){
-        dbConfig := dbs.DBConfig{
-            MongoDBHosts: "localhost:27017",
-            Database: "testdb",
-        }
+        dbConfig := db.DBConfig{
+        		Hosts:        "localhost:27017",
+        		AuthDatabase: "admin",
+        		AuthUserName: "",
+        		AuthPassword: "",
+        		Database:     "testdb",
+        	}
         
-        db := dbs.Connect(dbConfig)
+        db := db.Connect(dbConfig)
        
-        #Define model           
+        //Define model           
         type Brand struct {
             Code string `json:"code" bson:"code"`
             Name string `json:"name" bson:"name"`
@@ -58,7 +53,6 @@
         err = db.FindMany(collectionName, filter, "_id", &results)
         if err != nil {
            ...
-        }    
-...
+        }
     }
-    ```
+   ```
