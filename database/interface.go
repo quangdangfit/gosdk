@@ -24,5 +24,3 @@ type Database interface {
 	DeleteMany(collectionName string, selector interface{}) (err error)
 	ApplyDB(collectionName string, selector interface{}, payload interface{}, TResult interface{}) (err error)
 }
-
-type database struct{}

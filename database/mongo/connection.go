@@ -41,7 +41,7 @@ func nativeConnection(config db.DBConfig) *mgo.Session {
 	// Create a session which maintains a pool of socket connections
 	mgoSession, err := mgo.DialWithInfo(mongoDBDialInfo)
 	if err != nil {
-		log.Fatalln("[nativeConnection] ERROR: ", err)
+		log.Println("[nativeConnection] ERROR: ", err)
 	}
 	log.Println("[nativeConnection] Mongodb connected")
 	return mgoSession
@@ -58,7 +58,7 @@ func replicaSetConnection(config db.DBConfig) *mgo.Session {
 		ReplicaSetName: config.Replica,
 	})
 	if err != nil {
-		log.Fatalln("[replicaSetConnection] ERROR: ", err)
+		log.Println("[replicaSetConnection] ERROR: ", err)
 	}
 
 	session.SetSafe(&mgo.Safe{})

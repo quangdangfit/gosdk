@@ -25,7 +25,7 @@ func (db *mongoDB) EnsureIndex(collectionName string, index mgo.Index) bool {
 
 	err := collection.EnsureIndex(index)
 	if err != nil {
-		log.Fatal("[EnsureIndex] Ensure index name fail: ", index.Name, " - ERROR: ", err)
+		log.Println("[EnsureIndex] Ensure index name fail: ", index.Name, " - ERROR: ", err)
 		return false
 	}
 	log.Println("[EnsureIndex] Successful to ensure index: ", index.Name)
@@ -40,7 +40,7 @@ func (db *mongoDB) DropIndex(collectionName string, name string) bool {
 
 	err := collection.DropIndexName(name)
 	if err != nil {
-		log.Fatal("[DropIndex] Drop index fail: ", name, " - Error: ", err)
+		log.Println("[DropIndex] Drop index fail: ", name, " - Error: ", err)
 		return false
 	}
 	log.Println("[DropIndex] Drop index success: ", name)
@@ -65,7 +65,7 @@ func (db *mongoDB) FindOne(collectionName string, query interface{}, sort string
 	}
 
 	if err != nil {
-		log.Fatal("[FindOne] ERROR: ", err)
+		log.Println("[FindOne] ERROR: ", err)
 		return err
 	}
 
@@ -90,7 +90,7 @@ func (db *mongoDB) FindMany(collectionName string, query map[string]interface{},
 	}
 
 	if err != nil {
-		log.Fatal("[FindMany] ERROR: ", err)
+		log.Println("[FindMany] ERROR: ", err)
 		return err
 	}
 
@@ -111,7 +111,7 @@ func (db *mongoDB) FindManyPaging(collectionName string, query map[string]interf
 	pagingObj := paging.New(page, limit, total)
 	err := cursor.Skip(pagingObj.Skip).Limit(pagingObj.Limit).All(TResult)
 	if err == mgo.ErrNotFound {
-		log.Fatal("[FindManyPaging] ERROR: ", err)
+		log.Println("[FindManyPaging] ERROR: ", err)
 		return nil, err
 	}
 
@@ -127,7 +127,7 @@ func (db *mongoDB) PipeAll(collectionName string, pipeline interface{}, TResult 
 
 	err = collection.Pipe(pipeline).All(TResult)
 	if err != nil {
-		log.Fatal("[PipeAll] ERROR: ", err)
+		log.Println("[PipeAll] ERROR: ", err)
 		return err
 	}
 
@@ -144,7 +144,7 @@ func (db *mongoDB) InsertOne(collectionName string, payload interface{}) (err er
 
 	err = collection.Insert(payload)
 	if err != nil {
-		log.Fatal("[InsertOne] ERROR: ", err)
+		log.Println("[InsertOne] ERROR: ", err)
 		return err
 	}
 
@@ -163,7 +163,7 @@ func (db *mongoDB) InsertMany(collectionName string, payload []interface{}) (err
 	_, err = bulk.Run()
 
 	if err != nil {
-		log.Fatal("[InsertMany] ERROR: ", err)
+		log.Println("[InsertMany] ERROR: ", err)
 		return err
 	}
 	log.Println("[InsertMany] Successful to inserted records")
@@ -179,7 +179,7 @@ func (db *mongoDB) Upsert(collectionName string, selector interface{}, payload i
 
 	_, err = collection.Upsert(selector, payload)
 	if err != nil {
-		log.Fatal("[Upsert] ERROR: ", err)
+		log.Println("[Upsert] ERROR: ", err)
 		return err
 	}
 
@@ -196,7 +196,7 @@ func (db *mongoDB) UpdateOne(collectionName string, selector interface{}, payloa
 
 	err = collection.Update(selector, payload)
 	if err != nil {
-		log.Fatal("[UpdateOne] ERROR: ", err)
+		log.Println("[UpdateOne] ERROR: ", err)
 		return err
 	}
 
@@ -213,7 +213,7 @@ func (db *mongoDB) UpdateMany(collectionName string, selector interface{}, paylo
 
 	changed, err := collection.UpdateAll(selector, payload)
 	if err != nil {
-		log.Fatal("[UpdateMany] ERROR: ", err)
+		log.Println("[UpdateMany] ERROR: ", err)
 		return err
 	}
 
@@ -230,7 +230,7 @@ func (db *mongoDB) DeleteOne(collectionName string, selector interface{}) (err e
 
 	err = collection.Remove(selector)
 	if err != nil {
-		log.Fatal("[DeleteOne] ERROR: ", err)
+		log.Println("[DeleteOne] ERROR: ", err)
 		return err
 	}
 
@@ -247,7 +247,7 @@ func (db *mongoDB) DeleteMany(collectionName string, selector interface{}) (err 
 
 	changed, err := collection.RemoveAll(selector)
 	if err != nil {
-		log.Fatal("[DeleteMany] ERROR: ", err)
+		log.Println("[DeleteMany] ERROR: ", err)
 		return err
 	}
 
@@ -266,7 +266,7 @@ func (db *mongoDB) ApplyDB(collectionName string, selector interface{}, payload 
 	change := mgo.Change{Update: payload, ReturnNew: true}
 	_, err = collection.Find(selector).Apply(change, TResult)
 	if err != nil {
-		log.Fatal("[ApplyDB] ERROR: ", err)
+		log.Println("[ApplyDB] ERROR: ", err)
 		return err
 	}
 
