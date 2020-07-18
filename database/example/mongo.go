@@ -1,13 +1,15 @@
 package main
 
 import (
+	"log"
+
+	"gopkg.in/mgo.v2/bson"
+
 	db "gitlab.com/quangdangfit/gocommon/database"
 	"gitlab.com/quangdangfit/gocommon/database/mongo"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
-var Database mongo.MongoDB
+var Database mongo.Database
 
 type Brand struct {
 	Code string `json:"code" bson:"code"`
@@ -15,7 +17,7 @@ type Brand struct {
 }
 
 func index() {
-	index := mgo.Index{
+	index := db.IndexConfig{
 		Key:        []string{"code"},
 		Unique:     true,
 		DropDups:   false,
@@ -68,7 +70,7 @@ func DeleteBrand() {
 }
 
 func init() {
-	dbConfig := db.DBConfig{
+	dbConfig := db.Config{
 		Hosts:        "localhost:27017",
 		AuthDatabase: "admin",
 		AuthUserName: "",
@@ -77,4 +79,25 @@ func init() {
 	}
 
 	Database = mongo.New(dbConfig)
+}
+
+func main() {
+	dbConfig := db.Config{
+		Hosts:        "localhost:27017",
+		AuthDatabase: "admin",
+		AuthUserName: "",
+		AuthPassword: "",
+		Database:     "testdb",
+	}
+
+	Database = mongo.New(dbConfig)
+
+	var results = []Brand{}
+
+	filter := bson.M{"code": "code"}
+	Database.FindMany("brand", filter, "-_id", &results)
+
+	for _, e := range results {
+		log.Println(e.Name, e.Code)
+	}
 }
