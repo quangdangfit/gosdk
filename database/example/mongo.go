@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
 	db "gitlab.com/quangdangfit/gocommon/database"
@@ -17,7 +18,7 @@ type Brand struct {
 }
 
 func index() {
-	index := db.IndexConfig{
+	index := mgo.Index{
 		Key:        []string{"code"},
 		Unique:     true,
 		DropDups:   false,
