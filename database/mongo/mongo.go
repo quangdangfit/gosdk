@@ -3,7 +3,6 @@ package mongo
 import (
 	"log"
 
-	"github.com/jinzhu/copier"
 	"gopkg.in/mgo.v2"
 
 	db "gitlab.com/quangdangfit/gocommon/database"
@@ -11,9 +10,21 @@ import (
 )
 
 type Database interface {
-	db.Database
-
 	GetSession() *mgo.Session
+	EnsureIndex(collectionName string, index mgo.Index) bool
+	DropIndex(collectionName string, name string) bool
+	FindOne(table string, query map[string]interface{}, sort string, result interface{}) (err error)
+	FindMany(table string, query map[string]interface{}, sort string, result interface{}) (err error)
+	FindManyPaging(table string, query map[string]interface{}, sort string, offset int, limit int, result interface{}) (*paging.Paging, error)
+	PipeAll(table string, pipeline interface{}, result interface{}) (err error)
+	InsertOne(table string, payload interface{}) (err error)
+	InsertMany(table string, payload []interface{}) (err error)
+	Upsert(table string, selector interface{}, payload interface{}) (err error)
+	UpdateOne(table string, selector interface{}, payload interface{}) (err error)
+	UpdateMany(table string, selector interface{}, payload interface{}) (err error)
+	DeleteOne(table string, selector interface{}) (err error)
+	DeleteMany(table string, selector interface{}) (err error)
+	ApplyDB(table string, selector interface{}, payload interface{}, result interface{}) (err error)
 }
 
 type mongodb struct {
@@ -40,14 +51,12 @@ func (db *mongodb) GetSession() *mgo.Session {
 // EnsureIndex ensures an index with the given collection name and key exists, creating it with
 // the provided parameters if necessary. EnsureIndex does not modify a previously
 // existent index with a matching key. The old index must be dropped first instead.
-func (db *mongodb) EnsureIndex(collectionName string, index db.IndexConfig) bool {
+func (db *mongodb) EnsureIndex(collectionName string, index mgo.Index) bool {
 	sessionClone := db.conn.Session.Copy()
 	defer sessionClone.Close()
 	collection := sessionClone.DB(db.conn.Name).C(collectionName)
 
-	mgoIndex := mgo.Index{}
-	copier.Copy(&index, &mgoIndex)
-	err := collection.EnsureIndex(mgoIndex)
+	err := collection.EnsureIndex(index)
 	if err != nil {
 		log.Println("[EnsureIndex] Ensure index name fail: ", index.Name, " - ERROR: ", err)
 		return false
