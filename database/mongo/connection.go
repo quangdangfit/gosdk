@@ -1,30 +1,16 @@
 package mongo
 
 import (
-	db "gitlab.com/quangdangfit/gocommon/database"
-	"gopkg.in/mgo.v2"
 	"log"
 	"strings"
 	"time"
+
+	"gopkg.in/mgo.v2"
+
+	db "gitlab.com/quangdangfit/gocommon/database"
 )
 
-type MongoDB interface {
-	db.Database
-}
-
-func New(config db.DBConfig) MongoDB {
-	var s *mgo.Session
-
-	if config.Env == "replica" {
-		s = replicaSetConnection(config)
-	} else {
-		s = nativeConnection(config)
-	}
-	db := mgo.Database{Session: s, Name: config.Database}
-	return &mongoDB{conn: &db}
-}
-
-func nativeConnection(config db.DBConfig) *mgo.Session {
+func nativeConnection(config db.Config) *mgo.Session {
 	log.Println("[nativeConnection] Connecting mongodb")
 
 	var timeout time.Duration = 60
@@ -47,7 +33,7 @@ func nativeConnection(config db.DBConfig) *mgo.Session {
 	return mgoSession
 }
 
-func replicaSetConnection(config db.DBConfig) *mgo.Session {
+func replicaSetConnection(config db.Config) *mgo.Session {
 	log.Println("[replicaSetConnection] Connecting mongodb")
 
 	session, err := mgo.DialWithInfo(&mgo.DialInfo{
