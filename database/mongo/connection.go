@@ -7,7 +7,7 @@ import (
 
 	"gopkg.in/mgo.v2"
 
-	db "gitlab.com/quangdangfit/gocommon/database"
+	db "github.com/quangdangfit/gocommon/database"
 )
 
 func nativeConnection(config db.Config) *mgo.Session {

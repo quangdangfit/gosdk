@@ -6,8 +6,8 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	db "gitlab.com/quangdangfit/gocommon/database"
-	"gitlab.com/quangdangfit/gocommon/database/mongo"
+	db "github.com/quangdangfit/gocommon/database"
+	"github.com/quangdangfit/gocommon/database/mongo"
 )
 
 var Database mongo.Database

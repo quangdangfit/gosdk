@@ -1,4 +1,4 @@
-# Go common
+# Go development toolkit
 
 **Common lib in golang (datbase wrapper, logger, ...)**
 - Managed by version: [What is the version ?
@@ -11,7 +11,7 @@
   package main
   import (
       ...
-      "gitlab.com/quangdangfit/gocommon/utils/logger"
+      "github.com/quangdangfit/gocommon/utils/logger"
   )
   
   func main(){
@@ -26,7 +26,7 @@
     import (
        ...
        "gopkg.in/mgo.v2/bson"
-       db "gitlab.com/quangdangfit/gocommon/database"
+       db "github.com/quangdangfit/gocommon/database"
     )
     
     func main(){

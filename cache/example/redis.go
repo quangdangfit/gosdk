@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gitlab.com/quangdangfit/gocommon/cache/redis"
-	"gitlab.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gocommon/cache/redis"
+	"github.com/quangdangfit/gocommon/utils/logger"
 )
 
 func main() {

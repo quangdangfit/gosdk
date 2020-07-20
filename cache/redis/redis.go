@@ -7,8 +7,8 @@ import (
 
 	goredis "github.com/go-redis/redis/v8"
 
-	"gitlab.com/quangdangfit/gocommon/cache"
-	"gitlab.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gocommon/cache"
+	"github.com/quangdangfit/gocommon/utils/logger"
 )
 
 var ctx = context.Background()
