@@ -11,7 +11,7 @@
   package main
   import (
       ...
-      "github.com/quangdangfit/gocommon/utils/logger"
+      "github.com/quangdangfit/gosdk/utils/logger"
   )
   
   func main(){
@@ -26,7 +26,7 @@
     import (
        ...
        "gopkg.in/mgo.v2/bson"
-       db "github.com/quangdangfit/gocommon/database"
+       db "github.com/quangdangfit/gosdk/database"
     )
     
     func main(){

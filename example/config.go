@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/quangdangfit/gocommon/utils/config"
+	"github.com/quangdangfit/gosdk/utils/config"
 )
 
 func main() {

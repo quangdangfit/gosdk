@@ -3,7 +3,7 @@ package config
 import (
 	"strings"
 
-	"github.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gosdk/utils/logger"
 
 	"github.com/spf13/viper"
 )

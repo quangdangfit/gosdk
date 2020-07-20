@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gosdk/utils/logger"
 )
 
 //Reference article:
