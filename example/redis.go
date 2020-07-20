@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/quangdangfit/gosdk/cache/redis"
 	"github.com/quangdangfit/gosdk/utils/logger"
 )
@@ -11,20 +13,18 @@ func main() {
 		Password: "",
 		Database: 0,
 	}
-	option := redis.Option{
-		Expiration: 100,
-		KeyFn: func(key string) string {
-			return "quangcache" + key
-		},
+	keyFn := func(key string) string {
+		return "quangcache" + key
 	}
 
-	cache := redis.New(config, option)
+	c := redis.New(config, redis.WithExpiration(100*time.Second), redis.WithKeyFn(keyFn))
 	var data interface{}
 
-	cache.SetOrigin("quang", "quang", 100)
-	cache.Get("quang", &data)
-	cache.Remove("quang")
-	cache.RemovePattern("qua*")
+	c.SetOrigin("quang", "quang", 100*time.Second)
+	c.Set("quang", "quang", 100*time.Second)
+	c.Get("quang", &data)
+	c.Remove("quang")
+	c.RemovePattern("qua*")
 
 	logger.Info("data: ", data)
 }

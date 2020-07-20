@@ -14,11 +14,12 @@ import (
 var ctx = context.Background()
 
 type redis struct {
-	cmd    goredis.Cmdable
-	option Option
+	cmd        goredis.Cmdable
+	keyFn      cache.KeyFn
+	expiration time.Duration
 }
 
-func New(config Config, option Option) cache.Cache {
+func New(config Config, opts ...Option) cache.Cache {
 	rdb := goredis.NewClient(&goredis.Options{
 		Addr:     config.Address,
 		Password: config.Password,
@@ -31,9 +32,12 @@ func New(config Config, option Option) cache.Cache {
 		return nil
 	}
 
+	opt := getConfig(opts...)
+
 	return &redis{
-		cmd:    rdb,
-		option: option,
+		cmd:        rdb,
+		keyFn:      opt.keyFn,
+		expiration: opt.expiration,
 	}
 }
 
@@ -50,24 +54,9 @@ func (r *redis) IsConnected() bool {
 }
 
 func (r *redis) Get(key string, value interface{}) error {
-	cacheKey := r.option.KeyFn(key)
+	cacheKey := r.keyFn(key)
 	return r.GetOrigin(cacheKey, value)
 }
-
-func (r *redis) Set(key string, value interface{}, expiration time.Duration) error {
-	cacheKey := r.option.KeyFn(key)
-	return r.SetOrigin(cacheKey, value, expiration)
-}
-
-func (r *redis) Remove(keys ...string) error {
-	var cacheKeys []string
-	for _, key := range keys {
-		cacheKeys = append(cacheKeys, r.option.KeyFn(key))
-	}
-
-	return r.RemoveOrigin(cacheKeys...)
-}
-
 func (r *redis) GetOrigin(key string, value interface{}) error {
 	strValue, err := r.cmd.Get(ctx, key).Result()
 	if err != nil {
@@ -82,13 +71,23 @@ func (r *redis) GetOrigin(key string, value interface{}) error {
 	logger.Infof("Get from redis %s: %s", key, strValue)
 
 	data, _ := json.Marshal(strValue)
-	err = json.Unmarshal(data, &value)
+	err = json.Unmarshal(data, value)
 	if err != nil {
 		logger.Error("Failed to deserialize data", "error", err)
 		return err
 	}
 
 	return nil
+}
+
+func (r *redis) Set(key string, value interface{}) error {
+	cacheKey := r.keyFn(key)
+	return r.SetOrigin(cacheKey, value, r.expiration)
+}
+
+func (r *redis) SetWithExpiration(key string, value interface{}, expiration time.Duration) error {
+	cacheKey := r.keyFn(key)
+	return r.SetOrigin(cacheKey, value, expiration)
 }
 
 func (r *redis) SetOrigin(key string, value interface{}, expiration time.Duration) error {
@@ -104,6 +103,15 @@ func (r *redis) SetOrigin(key string, value interface{}, expiration time.Duratio
 	logger.Infof("Set to redis %s: %s", key, value)
 
 	return nil
+}
+
+func (r *redis) Remove(keys ...string) error {
+	var cacheKeys []string
+	for _, key := range keys {
+		cacheKeys = append(cacheKeys, r.keyFn(key))
+	}
+
+	return r.RemoveOrigin(cacheKeys...)
 }
 
 func (r *redis) RemoveOrigin(keys ...string) error {
