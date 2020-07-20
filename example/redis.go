@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/quangdangfit/gocommon/cache/redis"
-	"github.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gosdk/cache/redis"
+	"github.com/quangdangfit/gosdk/utils/logger"
 )
 
 func main() {

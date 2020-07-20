@@ -5,8 +5,8 @@ import (
 
 	"gopkg.in/mgo.v2"
 
-	db "github.com/quangdangfit/gocommon/database"
-	"github.com/quangdangfit/gocommon/utils/paging"
+	db "github.com/quangdangfit/gosdk/database"
+	"github.com/quangdangfit/gosdk/utils/paging"
 )
 
 type Database interface {

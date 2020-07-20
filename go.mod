@@ -1,4 +1,4 @@
-module github.com/quangdangfit/gocommon
+module github.com/quangdangfit/gosdk
 
 go 1.14
 

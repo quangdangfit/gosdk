@@ -3,7 +3,7 @@ package redis
 import (
 	"time"
 
-	"github.com/quangdangfit/gocommon/cache"
+	"github.com/quangdangfit/gosdk/cache"
 )
 
 type Option struct {

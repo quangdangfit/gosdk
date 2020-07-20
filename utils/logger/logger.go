@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"github.com/quangdangfit/gocommon/utils/logger/zaplogger"
+	"github.com/quangdangfit/gosdk/utils/logger/zaplogger"
 )
 
 var (

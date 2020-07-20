@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/quangdangfit/gocommon/errors"
-	"github.com/quangdangfit/gocommon/utils/logger"
+	"github.com/quangdangfit/gosdk/errors"
+	"github.com/quangdangfit/gosdk/utils/logger"
 )
 
 func main() {
