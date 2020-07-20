@@ -23,4 +23,5 @@ func main() {
 
 	logger.Info(errors.GetType(wrappedError))
 	logger.Info(wrappedError.Error())
+	logger.Info(errors.Stack(wrappedError))
 }
