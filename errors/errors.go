@@ -4,8 +4,6 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-
-	"github.com/quangdangfit/gosdk/utils/logger"
 )
 
 //Reference article:
@@ -64,10 +62,9 @@ func Wrapf(err error, msg string, args ...interface{}) error {
 }
 
 // Get Stacktrace of error
-func Stacktrace(err error) string {
+func Stack(err error) string {
 	if customErr, ok := err.(customError); ok {
 		return fmt.Sprintf("%+v\n", customErr.originalError)
 	}
-	logger.Info("customError")
-	return fmt.Sprintf("%+v\n", err)
+	return fmt.Sprintf("%+v\n", errors.WithStack(err))
 }
