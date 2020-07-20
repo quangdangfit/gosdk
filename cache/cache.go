@@ -11,10 +11,11 @@ const (
 type Cache interface {
 	IsConnected() bool
 	Get(key string, value interface{}) error
-	Set(key string, value interface{}, expiration time.Duration) error
-	Remove(keys ...string) error
+	Set(key string, value interface{}) error
 	GetOrigin(key string, value interface{}) error
+	SetWithExpiration(key string, value interface{}, expiration time.Duration) error
 	SetOrigin(key string, value interface{}, expiration time.Duration) error
+	Remove(keys ...string) error
 	RemoveOrigin(keys ...string) error
 	RemovePattern(pattern string) error
 	Keys(pattern string) ([]string, error)
