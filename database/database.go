@@ -7,7 +7,6 @@ import (
 )
 
 type Mongo interface {
-	GetSession() *mgo.Session
 	EnsureIndex(collectionName string, index mgo.Index) bool
 	DropIndex(collectionName string, name string) bool
 	FindOne(table string, query map[string]interface{}, sort string, result interface{}) (err error)

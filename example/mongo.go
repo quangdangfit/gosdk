@@ -93,6 +93,7 @@ func main() {
 
 	Database = mongo.New(dbConfig)
 
+	var result = Brand{}
 	var results = []Brand{}
 
 	filter := bson.M{"code": "DELL"}
@@ -102,5 +103,7 @@ func main() {
 		log.Println(e.Name, e.Code)
 	}
 
-	mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
+	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
+	database.FindOne("brands", filter, nil, &result)
+	log.Println(result.Name, result.Code)
 }

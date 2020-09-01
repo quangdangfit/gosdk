@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -14,7 +15,7 @@ import (
 )
 
 type mongodb struct {
-	client *mongo.Client
+	conn *mongo.Database
 }
 
 func NewWithConfig(config db.Config) *mongodb {
@@ -44,16 +45,23 @@ func NewWithConfig(config db.Config) *mongodb {
 	}
 
 	logger.Info("Mongodb connected")
-	return &mongodb{client: client}
+	return &mongodb{conn: client.Database(config.Database)}
 }
 
 func NewConnection(uri string) *mongodb {
-	logger.Info("Connecting mongodb")
+	dbname := ""
+	temp := strings.Split(uri, "/")
+	if len(temp) == 4 {
+		dbname = strings.Split(temp[3], "?")[0]
+	}
+
+	logger.Info("Connecting mongodb, database: ", dbname)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	opts := options.Client().ApplyURI(uri)
+	client, err := mongo.Connect(ctx, opts)
 
 	if err != nil {
 		logger.Fatal(err)
@@ -65,5 +73,21 @@ func NewConnection(uri string) *mongodb {
 	}
 
 	logger.Info("Mongodb connected")
-	return &mongodb{client: client}
+	return &mongodb{conn: client.Database(dbname)}
+}
+
+func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, sort interface{}, result interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+
+	opts := options.FindOne()
+	if sort != nil {
+		opts.SetSort(sort)
+	}
+
+	err = collection.FindOne(context.TODO(), query).Decode(result)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
