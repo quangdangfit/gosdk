@@ -101,4 +101,6 @@ func main() {
 	for _, e := range results {
 		log.Println(e.Name, e.Code)
 	}
+
+	mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
 }

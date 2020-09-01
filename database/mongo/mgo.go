@@ -45,7 +45,7 @@ func NewWithConnString(uri string) db.Mongo {
 }
 
 func nativeConnection(config db.Config) *mgo.Session {
-	log.Println("[nativeConnection] Connecting mongodb")
+	logger.Info("[nativeConnection] Connecting mongodb")
 
 	var timeout = 10
 	if config.ConnectionTimeout > 0 {
@@ -70,7 +70,7 @@ func nativeConnection(config db.Config) *mgo.Session {
 }
 
 func replicaSetConnection(config db.Config) *mgo.Session {
-	log.Println("[replicaSetConnection] Connecting mongodb")
+	logger.Info("[replicaSetConnection] Connecting mongodb")
 
 	var timeout = 10
 	if config.ConnectionTimeout > 0 {
