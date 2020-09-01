@@ -10,7 +10,7 @@ import (
 	"github.com/quangdangfit/gosdk/database/mongo"
 )
 
-var Database mongo.Database
+var Database db.Mongo
 
 type Brand struct {
 	Code string `json:"code" bson:"code"`
@@ -88,15 +88,15 @@ func main() {
 		AuthDatabase: "admin",
 		AuthUserName: "",
 		AuthPassword: "",
-		Database:     "testdb",
+		Database:     "test",
 	}
 
 	Database = mongo.New(dbConfig)
 
 	var results = []Brand{}
 
-	filter := bson.M{"code": "code"}
-	Database.FindMany("brand", filter, "-_id", &results)
+	filter := bson.M{"code": "DELL"}
+	Database.FindMany("brands", filter, "-_id", &results)
 
 	for _, e := range results {
 		log.Println(e.Name, e.Code)

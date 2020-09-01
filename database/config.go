@@ -8,7 +8,7 @@ type Config struct {
 	Database          string
 	AuthUserName      string
 	AuthPassword      string
-	ConnectionTimeout int64
+	ConnectionTimeout int
 	Env               string
 	Replica           string
 }
