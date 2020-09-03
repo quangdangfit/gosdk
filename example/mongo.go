@@ -93,17 +93,20 @@ func main() {
 
 	Database = mongo.New(dbConfig)
 
-	var result = Brand{}
+	//var result = Brand{}
 	var results = []Brand{}
 
-	filter := bson.M{"code": "DELL"}
-	Database.FindMany("brands", filter, "-_id", &results)
+	//filter := bson.M{"code": "DELL"}
+	Database.FindMany("brands", nil, "-_id", &results)
 
 	for _, e := range results {
 		log.Println(e.Name, e.Code)
 	}
 
 	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
-	database.FindOne("brands", filter, nil, &result)
-	log.Println(result.Name, result.Code)
+	database.FindMany("brands", nil, nil, &results)
+	for _, e := range results {
+		log.Println(e.Name, e.Code)
+	}
+
 }

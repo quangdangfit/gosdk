@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 
@@ -88,6 +89,56 @@ func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, 
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}, sort interface{}, result interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+
+	resultv := reflect.ValueOf(result)
+	if resultv.Kind() != reflect.Ptr || resultv.Elem().Kind() != reflect.Slice {
+		panic("[FindAll] Result argument must be a slice address")
+	}
+	slicev := resultv.Elem()
+	slicev = slicev.Slice(0, slicev.Cap())
+	elemt := slicev.Type().Elem()
+
+	opts := options.Find()
+	if sort != nil {
+		opts.SetSort(sort)
+	}
+
+	// Passing bson.D{{}} as the filter matches all documents in the collection
+	cur, err := collection.Find(context.TODO(), filter, opts)
+	if err != nil {
+		return err
+	}
+
+	i := 0
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+	for cur.Next(context.TODO()) {
+		// create a value into which the single document can be decoded
+		elemp := reflect.New(elemt)
+		err := cur.Decode(elemp.Interface())
+		if err != nil {
+			return err
+		}
+
+		slicev = reflect.Append(slicev, elemp.Elem())
+		slicev = slicev.Slice(0, slicev.Cap())
+
+		i++
+	}
+	resultv.Elem().Set(slicev.Slice(0, i))
+
+	if err := cur.Err(); err != nil {
+		return err
+	}
+
+	// Close the cursor once finished
+	cur.Close(context.TODO())
 
 	return nil
 }
