@@ -103,10 +103,10 @@ func main() {
 		log.Println(e.Name, e.Code)
 	}
 
-	//database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
-	//database.FindMany("brands", nil, nil, &results)
-	//for _, e := range results {
-	//	log.Println(e.Name, e.Code)
-	//}
+	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
+	database.FindMany("brands", nil, nil, &results)
+	for _, e := range results {
+		log.Println(e.Name, e.Code)
+	}
 
 }

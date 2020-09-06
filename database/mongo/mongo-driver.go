@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -98,9 +99,13 @@ func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}
 
 	resultv := reflect.ValueOf(result)
 	if resultv.Kind() != reflect.Ptr || resultv.Elem().Kind() != reflect.Slice {
-		panic("[FindAll] Result argument must be a slice address")
+		err := errors.New("result must be a slice address")
+		logger.Error("[FindAll] ", err)
+		return err
 	}
+
 	slicev := resultv.Elem()
+	oldLen := slicev.Len()
 	slicev = slicev.Slice(0, slicev.Cap())
 	elemt := slicev.Type().Elem()
 
@@ -131,7 +136,7 @@ func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}
 
 		i++
 	}
-	resultv.Elem().Set(slicev.Slice(0, i))
+	resultv.Elem().Set(slicev.Slice(oldLen, oldLen+i))
 
 	if err := cur.Err(); err != nil {
 		return err
