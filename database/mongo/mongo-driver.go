@@ -14,6 +14,7 @@ import (
 
 	db "github.com/quangdangfit/gosdk/database"
 	"github.com/quangdangfit/gosdk/utils/logger"
+	"github.com/quangdangfit/gosdk/utils/paging"
 )
 
 type mongodb struct {
@@ -146,4 +147,64 @@ func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}
 	cur.Close(context.TODO())
 
 	return nil
+}
+
+func (db *mongodb) FindManyPaging(collectionName string, filter map[string]interface{}, sort interface{}, page int, limit int, result interface{}) (*paging.Paging, error) {
+	collection := db.conn.Collection(collectionName)
+
+	resultv := reflect.ValueOf(result)
+	if resultv.Kind() != reflect.Ptr || resultv.Elem().Kind() != reflect.Slice {
+		err := errors.New("result must be a slice address")
+		logger.Error("[FindAll] ", err)
+		return nil, err
+	}
+
+	slicev := resultv.Elem()
+	oldLen := slicev.Len()
+	slicev = slicev.Slice(0, slicev.Cap())
+	elemt := slicev.Type().Elem()
+
+	opts := options.Find()
+	if sort != nil {
+		opts.SetSort(sort)
+	}
+	opts.SetLimit(int64(limit))
+	opts.SetSkip(int64((page - 1) * limit))
+
+	ctx := context.TODO()
+	total, err := collection.CountDocuments(ctx, filter)
+	pagingObj := paging.New(page, limit, int(total))
+
+	// Passing bson.D{{}} as the filter matches all documents in the collection
+	cur, err := collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, err
+	}
+
+	i := 0
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+	for cur.Next(context.TODO()) {
+		// create a value into which the single document can be decoded
+		elemp := reflect.New(elemt)
+		err := cur.Decode(elemp.Interface())
+		if err != nil {
+			return nil, err
+		}
+
+		slicev = reflect.Append(slicev, elemp.Elem())
+		slicev = slicev.Slice(0, slicev.Cap())
+
+		i++
+	}
+	resultv.Elem().Set(slicev.Slice(oldLen, oldLen+i))
+
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	// Close the cursor once finished
+	cur.Close(context.TODO())
+
+	return pagingObj, nil
 }

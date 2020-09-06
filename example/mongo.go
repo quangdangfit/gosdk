@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"gopkg.in/mgo.v2"
@@ -104,9 +105,10 @@ func main() {
 	}
 
 	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
-	database.FindMany("brands", nil, nil, &results)
+	pageInfo, _ := database.FindManyPaging("brands", nil, nil, 1, 3, &results)
 	for _, e := range results {
 		log.Println(e.Name, e.Code)
 	}
 
+	fmt.Println(*pageInfo)
 }
