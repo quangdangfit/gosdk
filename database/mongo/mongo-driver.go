@@ -77,6 +77,11 @@ func NewConnection(uri string) *mongodb {
 	return &mongodb{conn: client.Database(dbname)}
 }
 
+// FindOne executes the query and unmarshals the first obtained document into the
+// result argument, using the provided collection name, query and sort.
+// The query may be a map or a struct value capable of being marshalled with bson.
+// The sort is field name need to sort, a field name may be prefixed by - (minus) for
+// it to be sorted in reverse order.
 func (db *mongodb) FindOne(collectionName string, filter map[string]interface{}, sort interface{}, result interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
 	ctx := context.TODO()
@@ -94,6 +99,11 @@ func (db *mongodb) FindOne(collectionName string, filter map[string]interface{},
 	return nil
 }
 
+// FindMany executes the query and unmarshals the all obtained document into the
+// result argument, using the provided collection name, query, sort, and result interface.
+// The query may be a map or a struct value capable of being marshalled with bson.
+// The sort is field name need to sort, a field name may be prefixed by - (minus) for
+// it to be sorted in reverse order.
 func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}, sort interface{}, results interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
 	ctx := context.TODO()
@@ -122,6 +132,7 @@ func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}
 	return nil
 }
 
+// FindMany executes FindMany function but skip by page parameter and limit by limit parameter
 func (db *mongodb) FindManyPaging(collectionName string, filter map[string]interface{}, sort interface{}, page int, limit int, results interface{}) (*paging.Paging, error) {
 	collection := db.conn.Collection(collectionName)
 
@@ -157,6 +168,8 @@ func (db *mongodb) FindManyPaging(collectionName string, filter map[string]inter
 	return pagingObj, nil
 }
 
+// Insert inserts one document in the respective collection, the returned error will
+// be an error.
 func (db *mongodb) InsertOne(collectionName string, payload interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
 	ctx := context.TODO()
