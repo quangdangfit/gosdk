@@ -168,3 +168,16 @@ func (db *mongodb) InsertOne(collectionName string, payload interface{}) (err er
 
 	return nil
 }
+
+// InsertMany queues up the provided documents for insertion and run insert.
+func (db *mongodb) InsertMany(collectionName string, payload []interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
+
+	_, err = collection.InsertMany(ctx, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
