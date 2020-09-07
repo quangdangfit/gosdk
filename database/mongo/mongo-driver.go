@@ -209,3 +209,17 @@ func (db *mongodb) UpdateMany(collectionName string, selector interface{}, paylo
 
 	return nil
 }
+
+// DeleteOne finds a single document matching the provided selector document
+// and removes it from the database.
+func (db *mongodb) DeleteOne(collectionName string, filter interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
+
+	_, err = collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
