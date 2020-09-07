@@ -77,7 +77,7 @@ func NewConnection(uri string) *mongodb {
 	return &mongodb{conn: client.Database(dbname)}
 }
 
-func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, sort interface{}, result interface{}) (err error) {
+func (db *mongodb) FindOne(collectionName string, filter map[string]interface{}, sort interface{}, result interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
 	ctx := context.TODO()
 
@@ -86,7 +86,7 @@ func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, 
 		opts.SetSort(sort)
 	}
 
-	err = collection.FindOne(ctx, query).Decode(result)
+	err = collection.FindOne(ctx, filter).Decode(result)
 	if err != nil {
 		return err
 	}
@@ -184,11 +184,11 @@ func (db *mongodb) InsertMany(collectionName string, payload []interface{}) (err
 
 // UpdateOne finds a single document matching the provided selector document
 // and modifies it according to the update document.
-func (db *mongodb) UpdateOne(collectionName string, selector interface{}, payload interface{}) (err error) {
+func (db *mongodb) UpdateOne(collectionName string, filter interface{}, payload interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
 	ctx := context.TODO()
 
-	_, err = collection.UpdateOne(ctx, selector, payload)
+	_, err = collection.UpdateOne(ctx, filter, payload)
 	if err != nil {
 		return err
 	}
