@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
 	"gopkg.in/mgo.v2"
@@ -9,6 +8,7 @@ import (
 
 	db "github.com/quangdangfit/gosdk/database"
 	"github.com/quangdangfit/gosdk/database/mongo"
+	"github.com/quangdangfit/gosdk/utils/logger"
 )
 
 var Database db.Mongo
@@ -94,8 +94,11 @@ func main() {
 
 	Database = mongo.New(dbConfig)
 
-	//var result = Brand{}
-	var results = []Brand{}
+	//var result = Brand{
+	//	Code: "ASUS",
+	//	Name: "ASUS",
+	//}
+	var results []Brand
 
 	//filter := bson.M{"code": "DELL"}
 	Database.FindMany("brands", nil, "-_id", &results)
@@ -105,10 +108,12 @@ func main() {
 	}
 
 	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
-	pageInfo, _ := database.FindManyPaging("brands", nil, nil, 1, 3, &results)
+	err := database.FindMany2("brands", nil, nil, &results)
+	if err != nil {
+		logger.Error(err)
+	}
+	//database.InsertOne("brands", result)
 	for _, e := range results {
 		log.Println(e.Name, e.Code)
 	}
-
-	fmt.Println(*pageInfo)
 }

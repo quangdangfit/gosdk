@@ -2,9 +2,7 @@ package mongo
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"reflect"
 	"strings"
 	"time"
 
@@ -81,13 +79,14 @@ func NewConnection(uri string) *mongodb {
 
 func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, sort interface{}, result interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
 
 	opts := options.FindOne()
 	if sort != nil {
 		opts.SetSort(sort)
 	}
 
-	err = collection.FindOne(context.TODO(), query).Decode(result)
+	err = collection.FindOne(ctx, query).Decode(result)
 	if err != nil {
 		return err
 	}
@@ -95,49 +94,23 @@ func (db *mongodb) FindOne(collectionName string, query map[string]interface{}, 
 	return nil
 }
 
-func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}, sort interface{}, result interface{}) (err error) {
+func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}, sort interface{}, results interface{}) (err error) {
 	collection := db.conn.Collection(collectionName)
-
-	resultv := reflect.ValueOf(result)
-	if resultv.Kind() != reflect.Ptr || resultv.Elem().Kind() != reflect.Slice {
-		err := errors.New("result must be a slice address")
-		logger.Error("[FindAll] ", err)
-		return err
-	}
-
-	slicev := resultv.Elem()
-	oldLen := slicev.Len()
-	slicev = slicev.Slice(0, slicev.Cap())
-	elemt := slicev.Type().Elem()
+	ctx := context.TODO()
 
 	opts := options.Find()
 	if sort != nil {
 		opts.SetSort(sort)
 	}
 
-	// Passing bson.D{{}} as the filter matches all documents in the collection
-	cur, err := collection.Find(context.TODO(), filter, opts)
+	cur, err := collection.Find(ctx, filter, opts)
 	if err != nil {
 		return err
 	}
-
-	i := 0
-	// Finding multiple documents returns a cursor
-	// Iterating through the cursor allows us to decode documents one at a time
-	for cur.Next(context.TODO()) {
-		// create a value into which the single document can be decoded
-		elemp := reflect.New(elemt)
-		err := cur.Decode(elemp.Interface())
-		if err != nil {
-			return err
-		}
-
-		slicev = reflect.Append(slicev, elemp.Elem())
-		slicev = slicev.Slice(0, slicev.Cap())
-
-		i++
+	err = cur.All(ctx, results)
+	if err != nil {
+		return err
 	}
-	resultv.Elem().Set(slicev.Slice(oldLen, oldLen+i))
 
 	if err := cur.Err(); err != nil {
 		return err
@@ -149,20 +122,8 @@ func (db *mongodb) FindMany(collectionName string, filter map[string]interface{}
 	return nil
 }
 
-func (db *mongodb) FindManyPaging(collectionName string, filter map[string]interface{}, sort interface{}, page int, limit int, result interface{}) (*paging.Paging, error) {
+func (db *mongodb) FindManyPaging(collectionName string, filter map[string]interface{}, sort interface{}, page int, limit int, results interface{}) (*paging.Paging, error) {
 	collection := db.conn.Collection(collectionName)
-
-	resultv := reflect.ValueOf(result)
-	if resultv.Kind() != reflect.Ptr || resultv.Elem().Kind() != reflect.Slice {
-		err := errors.New("result must be a slice address")
-		logger.Error("[FindAll] ", err)
-		return nil, err
-	}
-
-	slicev := resultv.Elem()
-	oldLen := slicev.Len()
-	slicev = slicev.Slice(0, slicev.Cap())
-	elemt := slicev.Type().Elem()
 
 	opts := options.Find()
 	if sort != nil {
@@ -181,23 +142,10 @@ func (db *mongodb) FindManyPaging(collectionName string, filter map[string]inter
 		return nil, err
 	}
 
-	i := 0
-	// Finding multiple documents returns a cursor
-	// Iterating through the cursor allows us to decode documents one at a time
-	for cur.Next(context.TODO()) {
-		// create a value into which the single document can be decoded
-		elemp := reflect.New(elemt)
-		err := cur.Decode(elemp.Interface())
-		if err != nil {
-			return nil, err
-		}
-
-		slicev = reflect.Append(slicev, elemp.Elem())
-		slicev = slicev.Slice(0, slicev.Cap())
-
-		i++
+	err = cur.All(ctx, results)
+	if err != nil {
+		return nil, err
 	}
-	resultv.Elem().Set(slicev.Slice(oldLen, oldLen+i))
 
 	if err := cur.Err(); err != nil {
 		return nil, err
@@ -207,4 +155,16 @@ func (db *mongodb) FindManyPaging(collectionName string, filter map[string]inter
 	cur.Close(context.TODO())
 
 	return pagingObj, nil
+}
+
+func (db *mongodb) InsertOne(collectionName string, payload interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
+
+	_, err = collection.InsertOne(ctx, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
