@@ -223,3 +223,17 @@ func (db *mongodb) DeleteOne(collectionName string, filter interface{}) (err err
 
 	return nil
 }
+
+// DeleteMany finds all documents matching the provided selector document
+// and removes them from the database.
+func (db *mongodb) DeleteMany(collectionName string, selector interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
+
+	_, err = collection.DeleteMany(ctx, selector)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
