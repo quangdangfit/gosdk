@@ -195,3 +195,17 @@ func (db *mongodb) UpdateOne(collectionName string, selector interface{}, payloa
 
 	return nil
 }
+
+// UpdateMany finds all documents matching the provided selector document
+// and modifies them according to the update document.
+func (db *mongodb) UpdateMany(collectionName string, selector interface{}, payload interface{}) (err error) {
+	collection := db.conn.Collection(collectionName)
+	ctx := context.TODO()
+
+	_, err = collection.UpdateMany(ctx, selector, payload)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
