@@ -80,7 +80,7 @@ func init() {
 		Database:     "testdb",
 	}
 
-	Database = mongo.New(dbConfig)
+	Database = mongo.NewMongo(dbConfig)
 }
 
 func main() {
@@ -92,7 +92,7 @@ func main() {
 		Database:     "test",
 	}
 
-	Database = mongo.New(dbConfig)
+	Database = mongo.NewMongo(dbConfig)
 
 	//var result = Brand{
 	//	Code: "ASUS",
@@ -107,8 +107,8 @@ func main() {
 		log.Println(e.Name, e.Code)
 	}
 
-	database := mongo.NewConnection("mongodb+srv://quangdangfit:QDmogo7991@cluster0.9xi6s.mongodb.net/test?retryWrites=true&w=majority")
-	err := database.FindMany2("brands", nil, nil, &results)
+	database := mongo.NewWithConfig(dbConfig)
+	err := database.FindMany("brands", nil, nil, &results)
 	if err != nil {
 		logger.Error(err)
 	}

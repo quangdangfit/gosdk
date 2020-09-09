@@ -16,7 +16,7 @@ type gomgo struct {
 	conn *mgo.Database
 }
 
-func New(config db.Config) db.Mongo {
+func NewMongo(config db.Config) db.Mongo {
 	var s *mgo.Session
 
 	if config.Env == "replica" {

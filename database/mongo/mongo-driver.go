@@ -49,7 +49,7 @@ func NewWithConfig(config db.Config) *mongodb {
 	return &mongodb{conn: client.Database(config.Database)}
 }
 
-func NewConnection(uri string) *mongodb {
+func New(uri string) *mongodb {
 	dbname := ""
 	temp := strings.Split(uri, "/")
 	if len(temp) == 4 {
